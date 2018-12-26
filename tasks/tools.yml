@@ -198,6 +198,19 @@
   tags:
   - perf-tools
 
+- name: install kubernetes-perf-tools for root and default user
+  shell: |
+    git clone --depth 1 https://github.com/kubernetes/perf-tests.git ~/kubernetes-perf-tools
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/kubernetes-perf-tools'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+
+# git@github.com:kubernetes/perf-tests.git
 
 - name: install fzf for root and default user
   shell: |
