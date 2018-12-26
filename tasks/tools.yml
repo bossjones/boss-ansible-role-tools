@@ -291,6 +291,10 @@
   pip:
     name: "cheat"
 
+- name: Install tmuxp
+  pip:
+    name: "tmuxp"
+
 - name: install ~/.cheat for root and default user
   shell: |
     git clone https://github.com/bossjones/boss-cheatsheets ~/.cheat
