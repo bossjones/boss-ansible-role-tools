@@ -597,6 +597,26 @@
     mode: 0755
 
 
+- name: "create /usr/local/bin/mtu-fix.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # mtu-fix script
+      # Version: MASTER branch
+      # Author:  Bossjones
+      # How To Enable Jumbo Frames In Linux - mtu 9000
+      # SOURCE: https://linuxconfig.org/how-to-enable-jumbo-frames-in-linux
+
+      for i in $(ip a l  | grep 'mtu 1500' | awk -F':' '{print $2}'); do
+        ip link set $i mtu 9000
+      done
+
+    dest: "/usr/local/bin/mtu-fix.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
 - name: "create /usr/local/bin/nfsstat-top.sh"
   copy:
     content: |
