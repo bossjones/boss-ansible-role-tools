@@ -67,13 +67,13 @@ dependencies:
 
   - role: ansible-motd
 
-  - role: rvm.ruby
-    become: False
-    vars:
-      rvm1_rubies: ['ruby-2.4.2']
-      rvm1_user: "{{ ansible_user_id }}"
-      rvm1_install_flags: '--auto-dotfiles --user-install'
-      rvm1_install_path: "{{ ansible_user_dir }}/.rvm"
+  # - role: rvm.ruby
+  #   become: False
+  #   vars:
+  #     rvm1_rubies: ['ruby-2.4.2']
+  #     rvm1_user: "{{ ansible_user_id }}"
+  #     rvm1_install_flags: '--auto-dotfiles --user-install'
+  #     rvm1_install_path: "{{ ansible_user_dir }}/.rvm"
 
 # List your role dependencies here, one per line. Be sure to remove the '[]' above,
 # if you add dependencies to this list.
