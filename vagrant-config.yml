@@ -1,0 +1,19 @@
+# https://gist.github.com/gnarf/b103e77f37236ca72d8e
+:vms:
+  tools-box1:
+    :hostname: "tools-box1"
+    :ip: "192.168.50.103"
+    :ram: 2048
+    :cpu: 2
+    :box: "ubuntu/xenial64"
+    :id: 10
+
+:groups:
+  tools-box1:
+    - tools-box1
+  servers:
+    - tools-box1
+  kubernetes-tools-box1:
+    - tools-box1
+  kubernetes:
+    - tools-box1

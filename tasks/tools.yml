@@ -1,0 +1,718 @@
+##############################################################################
+# Install prereqs for perf/tools
+##############################################################################
+---
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+    force_apt_get: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+
+- name: install go
+  unarchive:
+    src: 'https://storage.googleapis.com/golang/go{{ go_version }}.linux-{{ sys_arch }}.tar.gz'
+    remote_src: yes
+    dest: /usr/local
+    mode: 0777
+    creates: /usr/local/go/bin/go
+
+# export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
+- name: set go env. vars. and add go to path
+  blockinfile:
+    dest: '$HOME/.bashrc'
+    block: |
+      export PATH=$PATH:/usr/local/go/bin
+      export GOPATH=$HOME
+    state: present
+    create: yes
+    mode: 0644
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: set fact env_go
+  set_fact:
+    env_go: '{{ env_go |default({}) | combine ({"PATH" : "/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/usr/local/go/bin"  }) | combine ({"GOPATH" :"$HOME"}) }}'
+
+- name: install fzy - A better fuzzy finder
+  shell: |
+    curl -L 'https://github.com/jhawthorn/fzy/releases/download/0.9/fzy_0.9-1_amd64.deb' > /usr/local/src/fzy_0.9-1_amd64.deb
+    apt install -y /usr/local/src/fzy_0.9-1_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/fzy
+
+- name: "Install ubuntu-make"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - ubuntu-make
+
+- name: "Install prereq tools"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - nethogs
+      - ccze
+      - htop
+      - silversearcher-ag
+      - netcat
+      - nmap
+      - netperf
+      - ngrep
+      - unzip
+      - nload
+      - jq
+      - ncdu
+      - traceroute
+      - sysstat
+      # - ssldump
+      # - sslsplit
+      - conntrack
+      # NOTE: RUN THIS GUY
+      - mtr
+      - tmux
+      # SOURCE: https://www.tecmint.com/test-network-throughput-in-linux/
+      - iperf3
+      # SOURCE: https://www.tecmint.com/tcpflow-analyze-debug-network-traffic-in-linux/
+      - tcpflow
+      # SOURCE: https://www.tecmint.com/linux-network-bandwidth-monitoring-tools/
+      - iftop
+      - procps
+      - dstat
+      - ifstat
+      - tcpstat
+      - atop
+      - iotop
+      - itop
+      - latencytop
+      - ntop
+      - tiptop
+      - sntop
+      - virt-top
+      - jnettop
+      - kerneltop
+      - logtop
+      - nicstat
+      - xclip
+      - perf-tools-unstable
+      - bonnie++
+      - gnuplot
+      - iozone3
+      - tree
+
+# SOURCE: https://gist.github.com/kometchtech/c5681b2a70b30c99bf7e834ffb3abba5
+- name: "Install dnsperf prereqs"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - bind9utils
+      - libbind-dev
+      - libkrb5-dev
+      - libssl-dev
+      - libcap-dev
+      - libxml2-dev
+      - geoip-bin
+      - libgeoip-dev
+      - build-essential
+      - curl
+      # REQUIRED: https://www.tecmint.com/hegemon-system-monitoring-tool-for-linux/
+      - libsensors4-dev
+
+- name: "Install python-deps"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - python3-dev
+      - python-dev
+      - python3-pip
+      - python-pip
+
+- name: check if /usr/bin/sysdig exists
+  stat:
+    path: /usr/bin/sysdig
+  register: sysdig_result
+  failed_when: false
+  changed_when: false
+  tags:
+    - slow
+
+- name: "SYSDIG: curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | sudo bash ONLY if it is not installed already"
+  shell: |
+    bash -lc "curl -s https://s3.amazonaws.com/download.draios.com/stable/install-sysdig | sudo bash"
+  args:
+    executable: /bin/bash
+  when: not sysdig_result.stat.exists
+  tags:
+    - slow
+
+# MORE TOOLS FROM: https://medium.com/@jonyeezs/my-minimal-over-powered-linux-setup-guide-710931efb75b
+
+- name: install fzf for root and default user
+  shell: |
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install --all
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.fzf'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - fzf
+
+
+- name: install fzf for root and default user
+  shell: |
+    git clone https://github.com/b4b4r07/enhancd ~/.enhancd
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.enhancd'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - enhanced
+
+- name: source ~/.enhancd/init.sh to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'source ~/.enhancd/init.sh'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: "ENHANCD_FILTER=fzy:fzf; export ENHANCD_FILTER to root/ssh user bashrc"
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'ENHANCD_FILTER=fzy:fzf; export ENHANCD_FILTER'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: "ENHANCD_HOOK_AFTER_CD='ls -A';export ENHANCD_HOOK_AFTER_CD to root/ssh user bashrc"
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: "ENHANCD_HOOK_AFTER_CD='ls -A';export ENHANCD_HOOK_AFTER_CD"
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: install tldr - Simplified and community-driven man pages
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/raylee/tldr/master/tldr' > /usr/local/bin/tldr
+    chmod +x /usr/local/bin/tldr
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/tldr
+
+- name: install gkill - Interactice process killer for Linux and macOS
+  shell: |
+    curl -L 'https://github.com/heppu/gkill/releases/download/v1.0.2/gkill-linux-amd64' > /usr/local/bin/gkill
+    chmod +x /usr/local/bin/gkill
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/gkill
+
+# https://github.com/heppu/gkill/releases/download/v1.0.2/gkill-linux-amd64
+
+- name: install grv - GRV — Git Repository Viewer
+  shell: |
+    curl -L 'https://github.com/rgburke/grv/releases/download/v0.1.2/grv_v0.1.2_linux64' > /usr/local/bin/grv
+    chmod +x /usr/local/bin/grv
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/grv
+
+- name: Add repositories
+  apt_repository:
+    repo: 'ppa:dawidd0811/neofetch'
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: "Install neofetch"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - neofetch
+
+- name: install tmux bash completion
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/Bash-it/bash-it/master/completion/available/tmux.completion.bash' > /etc/bash_completion.d/tmux ;
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /etc/bash_completion.d/tmux
+
+- name: Install cheat
+  pip:
+    name: "cheat"
+
+- name: install ~/.cheat for root and default user
+  shell: |
+    git clone https://github.com/bossjones/boss-cheatsheets ~/.cheat
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.cheat'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - cheat
+
+- name: autocomplete ~/.cheat for root and default user
+  shell: |
+    curl 'https://raw.githubusercontent.com/chrisallenlane/cheat/master/cheat/autocompletion/cheat.bash' > /etc/bash_completion.d/cheat ;
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/etc/bash_completion.d/cheat'
+  with_items:
+    - true  # Run as root
+  tags:
+  - cheat
+
+- name: Install cheat
+  pip:
+    name: "cheat"
+
+# https://github.com/nodesource/distributions/blob/master/README.md
+- name: install node version v11.4.0
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+    apt-get install -y nodejs
+    apt-get install -y gcc g++ make
+    npm install gtop -g
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/usr/bin/npm'
+  with_items:
+    - true  # Run as root
+  tags:
+  - node
+  - npm
+
+# SOURCE: https://github.com/iovisor/bcc/blob/master/INSTALL.md
+# FIXME: https://github.com/pypa/pip/issues/5240
+# curl https://bootstrap.pypa.io/get-pip.py | python3
+# pip2 install --upgrade pip
+
+# https://github.com/nodesource/distributions/blob/master/README.md
+- name: Install latest python pip for python3 and python2
+  shell: |
+    curl https://bootstrap.pypa.io/get-pip.py | python3
+    pip2 install --upgrade pip
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+  with_items:
+    - true  # Run as root
+  ignore_errors: yes
+  tags:
+  - pip
+  - python-pip
+
+- name: "create /usr/local/bin/GlancesAutoInstall.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # GlancesAutoInstall script
+      # Version: MASTER branch
+      # Author:  Nicolas Hennion (aka) Nicolargo
+      #
+
+      # Execute a command as root (or sudo)
+      do_with_root() {
+          # already root? "Just do it" (tm).
+          if [[ `whoami` = 'root' ]]; then
+              $*
+          elif [[ -x /bin/sudo || -x /usr/bin/sudo ]]; then
+              echo "sudo $*"
+              sudo $*
+          else
+              echo "Glances requires root privileges to install."
+              echo "Please run this script as root."
+              exit 1
+          fi
+      }
+
+      # Detect distribution name
+      if [[ `which lsb_release 2>/dev/null` ]]; then
+          # lsb_release available
+          distrib_name=`lsb_release -is`
+      else
+          # lsb_release not available
+          lsb_files=`find /etc -type f -maxdepth 1 \( ! -wholename /etc/os-release ! -wholename /etc/lsb-release -wholename /etc/\*release -o -wholename /etc/\*version \) 2> /dev/null`
+          for file in $lsb_files; do
+              if [[ $file =~ /etc/(.*)[-_] ]]; then
+                  distrib_name=${BASH_REMATCH[1]}
+                  break
+              else
+                  echo "Sorry, GlancesAutoInstall script is not compliant with your system."
+                  echo "Please read: https://github.com/nicolargo/glances#installation"
+                  exit 1
+              fi
+          done
+      fi
+
+      echo "Detected system:" $distrib_name
+
+      shopt -s nocasematch
+      # Let's do the installation
+      if [[ $distrib_name == "ubuntu" || $distrib_name == "LinuxMint" || $distrib_name == "debian" || $distrib_name == "Raspbian" ]]; then
+          # Ubuntu/Debian variants
+
+          # Set non interactive mode
+          set -eo pipefail
+          export DEBIAN_FRONTEND=noninteractive
+
+          # Make sure the package repository is up to date
+          do_with_root apt-get -y --force-yes update
+
+          # Install prerequirements
+          do_with_root apt-get install -y --force-yes python-pip python-dev gcc lm-sensors wireless-tools
+
+      elif [[ $distrib_name == "oracle" ]]; then
+          # Oracle EL 7, should work on 6 as well
+
+          # Enable repo
+          do_with_root yum -y install yum-utils
+          do_with_root yum-config-manager --enablerepo ol`. /etc/os-release; echo $VERSION | cut -d. -f1`_software_collections
+
+          # Install prerequirements
+          do_with_root yum -y install python27-python-pip python27-python-devel gcc lm_sensors wireless-tools
+
+          # Create glances script
+          GLANCES_BIN=/usr/bin/glances
+          echo "#!/bin/bash" > $GLANCES_BIN
+          echo ". /opt/rh/python27/enable" >> $GLANCES_BIN
+          echo "glances" >> $GLANCES_BIN
+          chmod +x $GLANCES_BIN
+
+          # Load Python27 env
+          . /opt/rh/python27/enable
+
+      elif [[ $distrib_name == "centminmod" ]]; then
+          # /CentOS min based
+
+          # Install prerequirements
+          do_with_root yum -y install python-devel gcc lm_sensors wireless-tools
+          do_with_root wget -O- https://bootstrap.pypa.io/get-pip.py | python && $(which pip) install -U pip && ln -s $(which pip) /usr/bin/pip
+
+      elif [[ $distrib_name == "arch" ]]; then
+          # Arch support
+
+          # Headers not needed for Arch, shipped with regular python packages
+          do_with_root pacman -S python-pip lm_sensors wireless_tools --noconfirm
+
+      else
+          # Unsupported system
+          echo "Sorry, GlancesAutoInstall script is not compliant with your system."
+          echo "Please read: https://github.com/nicolargo/glances#installation"
+          exit 1
+
+      fi
+      shopt -u nocasematch
+
+      echo "Install dependancies"
+
+      # Glances issue #922: Do not install PySensors (SENSORS)
+      DEPS="setuptools glances[action,batinfo,browser,cpuinfo,chart,docker,export,folders,gpu,ip,raid,snmp,web,wifi]"
+
+      # Install libs
+      do_with_root pip install --upgrade pip
+      do_with_root pip install $DEPS
+
+      # Install or ugrade Glances from the Pipy repository
+      if [[ -x /usr/local/bin/glances || -x /usr/bin/glances ]]; then
+          echo "Upgrade Glances and dependancies"
+          # Upgrade libs
+          do_with_root pip install --upgrade $DEPS
+          do_with_root pip install --upgrade glances
+      else
+          echo "Install Glances"
+          # Install Glances
+          do_with_root pip install glances
+      fi
+
+    dest: "/usr/local/bin/GlancesAutoInstall.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+- name: 'Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4052245BD4284CDD'
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: 4052245BD4284CDD
+    state: present
+
+# Add specified repository into sources list using specified filename.
+- name: add bcc repo on xenial
+  apt_repository:
+    repo: deb https://repo.iovisor.org/apt/{{ansible_distribution_release}} {{ansible_distribution_release}} main
+    state: present
+    update_cache: yes
+    filename: iovisor.list
+  when: ansible_os_family == "Debian"
+
+- name: 'uname -r'
+  shell: uname -r
+  ignore_errors: yes
+  failed_when: false
+  changed_when: false
+  register: uname_result
+
+- debug: msg="{{ uname_result.stdout }}"
+
+- name: "Install bcc"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - bcc-tools
+      - libbcc-examples
+      - "linux-headers-{{ uname_result.stdout }}"
+      # NOTE: These are required for perf to work
+      # SOURCE: http://www.brendangregg.com/perf.html#Prerequisites
+      # SOURCE: https://github.com/brendangregg/perf-tools
+      # SOURCE: http://www.brendangregg.com/HeatMaps/latency.html
+      - "linux-tools-{{ uname_result.stdout }}"
+      - "linux-cloud-tools-{{ uname_result.stdout }}"
+      - linux-tools-generic
+      - linux-cloud-tools-generic
+
+- name: git clone https://github.com/bossjones/tmux-config.git
+  shell: |
+    apt-get install -y tmux
+    git clone https://github.com/bossjones/tmux-config.git ~/tmux-config || (cd ~/tmux-config ; git pull)
+    ./tmux-config/install.sh
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/tmux-config'
+  with_items:
+    - true  # Run as vagrant
+    - false  # Run as vagrant
+  tags:
+  - tmux
+  - tmux-config
+
+- name: Add bcc-tools to path
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'export PATH="/usr/share/bcc/tools:$PATH"'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: "create /usr/local/bin/nfs-benchmark.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # nfs-benchmark script
+      # Version: MASTER branch
+      # Author:  Bossjones
+      #
+
+      i=1
+      until [ $i -gt 100 ]
+      do
+        echo "Running bonne++ $i of 100."
+        echo ""
+        echo "-----------------------------------------------------"
+        bonnie++ -d /mnt/publicdata/ -s 2048 -r 1024 -u 65534 -g 65534
+        echo ""
+        echo ""
+        i=$(( i+1 ))
+      done
+
+
+
+    dest: "/usr/local/bin/nfs-benchmark.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+
+- name: "create /usr/local/bin/nfsstat-top.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # OPTIONS: https://linux.die.net/man/8/nfsstat
+      # nfsstat-top script
+      # Version: MASTER branch
+      # Author:  Bossjones
+      #
+
+      watch "nfsstat -o all -234"
+
+
+
+    dest: "/usr/local/bin/nfsstat-top.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+
+- name: "create /usr/local/bin/nfsstat-report.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # OPTIONS: https://linux.die.net/man/8/nfsstat
+      # nfsstat-report script
+      # Version: MASTER branch
+      # Author:  Bossjones
+      #
+
+      echo "nfsstat-report"
+      echo ""
+      echo "[Show information about mounted NFS filesystems]"
+      echo "-----------------------------------------------------"
+      nfsstat -m | ccze -A
+      echo ""
+      echo ""
+      echo "[Show all information about all versions of NFS]"
+      echo "-----------------------------------------------------"
+      nfsstat -o all -234 | ccze -A
+
+
+    dest: "/usr/local/bin/nfsstat-report.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+
+- name: "create /usr/local/bin/iozone-benchmark.sh"
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      #
+      # OPTIONS: https://linux.die.net/man/8/nfsstat
+      # iozone-benchmark script
+      # Version: MASTER branch
+      # Author:  Bossjones
+      #
+
+      # SOURCE: http://nfs.sourceforge.net/nfs-howto/ar01s05.html
+      # the benchmark should take 2-3 hours at most, but of course you will need to run it for each value of rsize and wsize that is of interest. The web site gives full documentation of the parameters, but the specific options used above are:
+
+      # -a: Full automatic mode, which tests file sizes of 64K to 512M, using record sizes of 4K to 16M
+      # -R: Generate report in excel spreadsheet form (The "surface plot" option for graphs is best)
+      # -c: Include the file close time in the tests, which will pick up the NFS version 3 commit time
+      # -U: Use the given mount point to unmount and remount between tests; it clears out caches
+      # -f: When using unmount, you have to locate the test file in the mounted file system
+
+
+      echo "iozone-benchmark"
+      echo ""
+      echo "[ONLY RUN THIS ON CLIENT MACHINES NOT THE NFS SERVER]"
+      echo "-----------------------------------------------------"
+      time iozone -a -R -c -U /mnt/publicdata -f /mnt/publicdata/testfile > /var/log/iozone-benchmark-logfile
+      echo ""
+      echo ""
+
+    dest: "/usr/local/bin/iozone-benchmark.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+
+- name: "Install prereq tools"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - nethogs
+      - ccze
+      - htop
+      - silversearcher-ag
+      - netcat
+      - nmap
+      - netperf
+      - ngrep
+      - unzip
+      - nload
+      - jq
+      - ncdu
+      - traceroute
+      - sysstat
+      # - ssldump
+      # - sslsplit
+      - conntrack
+      # NOTE: RUN THIS GUY
+      - mtr
+      - tmux
+      # SOURCE: https://www.tecmint.com/test-network-throughput-in-linux/
+      - iperf3
+      # SOURCE: https://www.tecmint.com/tcpflow-analyze-debug-network-traffic-in-linux/
+      - tcpflow
+      # SOURCE: https://www.tecmint.com/linux-network-bandwidth-monitoring-tools/
+      - iftop
+
+- debug: msg="tmuxinator"
+
+- name: mkdir -p ~/.tmuxinator
+  shell: |
+    mkdir -p ~/.tmuxinator
+  become: '{{ item }}'
+  become_user: "{{bossjones__user}}"
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.tmuxinator'
+  ignore_errors: yes
+  with_items:
+    - false  # Run as vagrant
+  tags:
+  - tmux
+  - tmuxinator
+
+- name: Generate /home/vagrant/.tmuxinator/perf.yaml file
+  template:
+    src: "home/vagrant/.tmuxinator/perf.yml.j2"
+    dest: "/home/vagrant/.tmuxinator/perf.yml"
+    mode: "0644"
+  become: '{{ item }}'
+  become_user: "{{bossjones__user}}"
+  ignore_errors: yes
+  with_items:
+    - false  # Run as vagrant
+  tags:
+  - tmux
+  - tmuxinator

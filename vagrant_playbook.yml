@@ -1,0 +1,27 @@
+---
+##############################################################################
+# SERVERS: Install and configure ntp
+##############################################################################
+- hosts: servers
+  name: servers install etckeeper
+  gather_facts: True
+  become: yes
+  become_method: sudo
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  tags:
+    - servers
+    - install
+    - servers_install
+    - etckeeper
+    - tools
+  roles:
+    - role: boss-ansible-role-etckeeper
+    - role: boss-ansible-role-debug
+      boss__debug__debug_variables_file: '/tmp/ansible_variables'
+      boss__debug__dump_dir: '/etc/ansible_dumps'
+      boss__debug__dump_type: 'unified' # seperate
+    - role: ../
+      task: tools
+      bossjones__user: vagrant
+      bossjones__group: vagrant

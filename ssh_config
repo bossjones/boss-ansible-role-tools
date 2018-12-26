@@ -1,0 +1,9 @@
+Host tools-box1*
+  User vagrant
+  Port 22
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile /Users/malcolm/dev/bossjones/bossjones-playbook-suite/boss-ansible-role-tools/.vagrant/machines/tools-box1/virtualbox/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL

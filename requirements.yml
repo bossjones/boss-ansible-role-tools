@@ -1,0 +1,20 @@
+---
+- src: https://github.com/bossjones/boss-ansible-role-fact
+- src: https://github.com/bossjones/boss-ansible-role-environment
+- src: https://github.com/bossjones/boss-ansible-role-core
+- src: https://github.com/bossjones/boss-ansible-role-bootstrap
+- src: https://github.com/bossjones/boss-ansible-role-docker
+- src: https://github.com/bossjones/boss-ansible-role-etckeeper
+- src: https://github.com/bossjones/boss-ansible-role-debug
+- src: geerlingguy.pip
+- src: https://github.com/bossjones/ansible-goss-install
+- src: rvm.ruby
+
+
+
+- src: https://www.github.com/mrlesmithjr/ansible-netdata.git
+- src: https://www.github.com/mrlesmithjr/ansible-nginx.git
+- src: https://www.github.com/mrlesmithjr/ansible-ntp.git
+- src: https://www.github.com/mrlesmithjr/ansible-timezone.git
+- src: https://www.github.com/mrlesmithjr/ansible-motd
+- src: https://www.github.com/mrlesmithjr/ansible-logrotate

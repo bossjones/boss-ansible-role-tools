@@ -1,0 +1,5 @@
+---
+
+go_version: "1.10"
+
+boss__ntp__timezone: 'America/New_York'
