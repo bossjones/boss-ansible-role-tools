@@ -175,6 +175,19 @@
   tags:
   - fzf
 
+- name: install perf-tools for root and default user
+  shell: |
+    git clone --depth 1 https://github.com/brendangregg/perf-tools ~/perf-tools
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/perf-tools'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - perf-tools
+
 
 - name: install fzf for root and default user
   shell: |
