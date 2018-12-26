@@ -3,3 +3,5 @@
 go_version: "1.10"
 
 boss__ntp__timezone: 'America/New_York'
+
+boss__tools__ruby_version: 2.4.2

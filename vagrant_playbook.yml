@@ -16,11 +16,31 @@
     - etckeeper
     - tools
   roles:
-    - role: boss-ansible-role-etckeeper
-    - role: boss-ansible-role-debug
-      boss__debug__debug_variables_file: '/tmp/ansible_variables'
-      boss__debug__dump_dir: '/etc/ansible_dumps'
-      boss__debug__dump_type: 'unified' # seperate
+    # - role: boss-ansible-role-etckeeper
+    # - role: boss-ansible-role-debug
+
+    # - role: ansible-timezone
+    #   timezone: 'America/New_York'
+    #   timezone_update_hardware_clock: False
+    # - role: ansible-ntp
+    #   # defaults file for ansible-ntp
+    #   # Defines if host is ntp_master
+    #   # set ntp_master to true on specific group_vars/group
+    #   ntp_master: False
+
+    #   # Define your ntp_master_servers
+    #   ntp_master_servers:
+    #     - 0.ubuntu.pool.ntp.org
+    #     - 1.ubuntu.pool.ntp.org
+    #     - 2.ubuntu.pool.ntp.org
+    #     - 3.ubuntu.pool.ntp.org
+
+    #   # Defines your primary domain name (FQDN)
+    #   ntp_pri_domain_name: 'localdomain'
+
+    #   boss__debug__debug_variables_file: '/tmp/ansible_variables'
+    #   boss__debug__dump_dir: '/etc/ansible_dumps'
+    #   boss__debug__dump_type: 'unified' # seperate
     - role: ../
       task: tools
       bossjones__user: vagrant

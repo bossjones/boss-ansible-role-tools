@@ -226,6 +226,9 @@ run-bridge-log-iptables-ansible:
 run-bridge-ansible-no-slow:
 	@ansible-playbook -i hosts vagrant_playbook.yml -v --skip-tags "slow"
 
+run-bridge-ansible-rvm:
+	@ansible-playbook -i inventory.ini vagrant_playbook.yml -v
+
 run-bridge-debug-ansible:
 	@ansible-playbook -i hosts debug.yml -v
 

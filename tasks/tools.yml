@@ -48,7 +48,7 @@
   become_method: sudo
   args:
     executable: /bin/bash
-    creates: /usr/local/bin/fzy
+    creates: /usr/bin/fzy
 
 - name: "Install ubuntu-make"
   package:
@@ -110,6 +110,7 @@
       - gnuplot
       - iozone3
       - tree
+      - ruby2.3-dev
 
 # SOURCE: https://gist.github.com/kometchtech/c5681b2a70b30c99bf7e834ffb3abba5
 - name: "Install dnsperf prereqs"
@@ -472,6 +473,19 @@
     group: "root"
     mode: 0755
 
+- name: Install glances full suite
+  shell: |
+    bash GlancesAutoInstall.sh
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/glances
+  with_items:
+    - true  # Run as root
+  ignore_errors: yes
+  tags:
+  - glances
+
 - name: 'Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4052245BD4284CDD'
   apt_key:
     keyserver: keyserver.ubuntu.com
@@ -515,9 +529,9 @@
 
 - name: git clone https://github.com/bossjones/tmux-config.git
   shell: |
-    apt-get install -y tmux
     git clone https://github.com/bossjones/tmux-config.git ~/tmux-config || (cd ~/tmux-config ; git pull)
-    ./tmux-config/install.sh
+    ~/tmux-config/install.sh
+    chdir=$HOME
   become: '{{ item }}'
   args:
     executable: /bin/bash
@@ -528,6 +542,7 @@
   tags:
   - tmux
   - tmux-config
+
 
 - name: Add bcc-tools to path
   lineinfile:
@@ -716,3 +731,139 @@
   tags:
   - tmux
   - tmuxinator
+
+# # SOURCE: https://github.com/rvm/rvm1-ansible/issues/46#issuecomment-278792283
+# - name: Install gems
+#   gem:
+#     state: present
+#     # chdir: "{{ ansible_user_dir }}"
+#     executable: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/gem"
+#     # gem_path: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}"
+#     name: "{{item}}"
+#   environment:
+#     PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin:\
+#             {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global/bin:\
+#             {{ ansible_user_dir }}/.rvm/rubies/ruby-{{ boss__tools__ruby_version }}/bin:\
+#             {{ ansible_user_dir }}/.rvm/bin:\
+#             {{ lookup('env', 'PATH') }}"
+#     GEM_PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}:\
+#                 {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global"
+#   with_items:
+#     - tmuxinator
+#     - bundler
+#   tags:
+#   - rvm
+#   - tmuxinator
+
+
+
+# # - name: Install gems
+# #   shell: |
+# #     {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/gem install {{item}}
+# #   become: 'false'
+# #   become_user: "{{bossjones__user}}"
+# #   args:
+# #     executable: /bin/bash
+# #     creates: '{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/bundler'
+# #   ignore_errors: yes
+# #   environment:
+# #     PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin:\
+# #             {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global/bin:\
+# #             {{ ansible_user_dir }}/.rvm/rubies/ruby-{{ boss__tools__ruby_version }}/bin:\
+# #             {{ ansible_user_dir }}/.rvm/bin:\
+# #             {{ lookup('env', 'PATH') }}"
+# #     GEM_PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}:\
+# #                 {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global"
+# #   with_items:
+# #     - tmuxinator
+# #     - bundler
+# #   tags:
+# #   - rvm
+# #   - tmuxinator
+
+
+- name: source $HOME/.rvm/scripts/rvm to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'source $HOME/.rvm/scripts/rvm'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: source $HOME/.rvm/scripts/rvm to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bash_profile'
+    line: 'source $HOME/.rvm/scripts/rvm'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: autocomplete rvm
+  lineinfile:
+    path: '$HOME/.bash_profile'
+    line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+- name: autocomplete rvm
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+# \curl -sSL https://get.rvm.io | bash -s stable --ruby=jruby --gems=rails,puma
+# curl -sSL https://get.rvm.io | bash -s stable --ruby
+# \curl -sSL https://get.rvm.io | bash -s stable --with-default-gems="tmuxinator bundler"
+
+- name: install rvm for base user
+  shell: |
+    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB;
+    \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.4.2 --gems=tmuxinator,bundler;
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.rvm'
+  register: rvm_install_global
+  changed_when: false
+  ignore_errors: yes
+  failed_when: false
+  check_mode: no
+  become: yes
+  become_user: "{{bossjones__user}}"
+
+# source $HOME/.rvm/scripts/rvm
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# export PATH="$PATH:$HOME/.rvm/bin"
+
+- name: install gems for rvm version
+  shell: $SHELL -lc "rvm use {{boss__tools__ruby_version}} --default; gem install {{item}}"
+  args:
+    executable: /bin/bash
+    creates: '{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/bundler'
+  register: rvm_install_global
+  changed_when: false
+  ignore_errors: yes
+  environment:
+    PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin:\
+            {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global/bin:\
+            {{ ansible_user_dir }}/.rvm/rubies/ruby-{{ boss__tools__ruby_version }}/bin:\
+            {{ ansible_user_dir }}/.rvm/bin:\
+            {{ lookup('env', 'PATH') }}"
+  failed_when: false
+  check_mode: no
+  with_items:
+    - tmuxinator
+    - bundler
+  become: yes
+  become_user: "{{bossjones__user}}"
