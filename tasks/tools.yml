@@ -50,6 +50,16 @@
     executable: /bin/bash
     creates: /usr/bin/fzy
 
+- name: install ripgrep
+  shell: |
+    curl -L 'https://github.com/BurntSushi/ripgrep/releases/download/0.10.0/ripgrep_0.10.0_amd64.deb' > /usr/local/src/ripgrep_0.10.0_amd64.deb
+    apt install -y /usr/local/src/ripgrep_0.10.0_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/bin/rg
+
 - name: "Install ubuntu-make"
   package:
     name: "{{ item }}"

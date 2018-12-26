@@ -240,10 +240,14 @@ rebuild: destroy flush-cache bridge-up sleep ping-bridge run-bridge-ansible run-
 pip-install-pygments:
 	pip install Pygments
 
-# open-netdata-registry:
-# 	./scripts/open-browser.py $(URL_PATH_NETDATA_REGISTRY)
+# For performance tuning/measuring
+run-ansible-netdata:
+	@ansible-playbook -i inventory.ini netdata.yml -v
+
+open-netdata-registry:
+	./scripts/open-browser.py $(URL_PATH_NETDATA_REGISTRY)
 
 # open-netdata-node:
 # 	./scripts/open-browser.py $(URL_PATH_NETDATA_NODE)
 
-# open: open-netdata-registry open-netdata-node
+open: open-netdata-registry
