@@ -943,6 +943,11 @@
   become_user: "{{bossjones__user}}"
 
 
+- name: 'This is for debug packages GPG Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F2EDC64DC5AEE1F6B9C621F0C8CAB6595FDFF622'
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: F2EDC64DC5AEE1F6B9C621F0C8CAB6595FDFF622
+    state: present
 
 # SOURCE: https://wiki.ubuntu.com/Debug%20Symbol%20Packages
 # Add specified repository into sources list using specified filename.
