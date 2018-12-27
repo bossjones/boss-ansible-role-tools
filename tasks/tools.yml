@@ -198,6 +198,38 @@
   tags:
   - perf-tools
 
+- name: install FlameGraph for root and default user
+  shell: |
+    git clone https://github.com/brendangregg/FlameGraph ~/FlameGraph
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/FlameGraph'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - perf-tools
+
+# FIXME: Find a way to run this in nginx
+- name: install d3-flame-graph for root and default user
+  shell: |
+    git clone https://github.com/spiermar/d3-flame-graph ~/d3-flame-graph
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/d3-flame-graph'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - perf-tools
+  # NOTE: How to run this !!!
+  # $ git clone https://github.com/spiermar/d3-flame-graph.git
+  # $ cd d3-flame-graph
+  # $ npm install
+  # $ gulp serve
+
 - name: install kubernetes-perf-tools for root and default user
   shell: |
     git clone --depth 1 https://github.com/kubernetes/perf-tests.git ~/kubernetes-perf-tools
@@ -265,6 +297,17 @@
   args:
     executable: /bin/bash
     creates: /usr/local/bin/tldr
+# https://github.com/spiermar/burn
+- name: install burn - is a CLI tool to convert performance profiles to hierarchical data structures that can be visualized as flame graphs
+  shell: |
+    curl -L 'https://dl.bintray.com/mspier/binaries/burn/1.0.1/linux/amd64/burn' > /usr/local/bin/burn
+    chmod +x /usr/local/bin/burn
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/burn
+
 
 - name: install gkill - Interactice process killer for Linux and macOS
   shell: |
@@ -977,7 +1020,7 @@
 
 - name: Generate /usr/local/bin/list-symbols-packages.sh file
   template:
-    src: "usr/local/bin/list-symbols-packages.sh.j2"
+    src: "list-symbols-packages.sh.j2"
     dest: "/usr/local/bin/list-symbols-packages.sh"
     mode: "0755"
   become: '{{ item }}'
