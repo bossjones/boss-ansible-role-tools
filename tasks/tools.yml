@@ -209,6 +209,7 @@
     - true  # Run as root
     - false
   tags:
+  - kube
 
 # git@github.com:kubernetes/perf-tests.git
 
