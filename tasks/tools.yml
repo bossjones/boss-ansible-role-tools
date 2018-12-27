@@ -106,7 +106,7 @@
       - iotop
       - itop
       - latencytop
-      - ntop
+      # - ntop
       - tiptop
       - sntop
       - virt-top
