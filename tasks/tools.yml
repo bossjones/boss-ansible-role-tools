@@ -1024,7 +1024,7 @@
     dest: "/usr/local/bin/list-symbols-packages.sh"
     mode: "0755"
   become: '{{ item }}'
-  become_user: "{{bossjones__user}}"
+  # become_user: "{{bossjones__user}}"
   ignore_errors: yes
   with_items:
     - true  # Run as vagrant
