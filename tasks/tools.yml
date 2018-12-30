@@ -1028,3 +1028,14 @@
   ignore_errors: yes
   with_items:
     - true  # Run as vagrant
+
+
+- name: install multi-git-status  - Show uncommitted, untracked and unpushed changes for multiple Git repos
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/bossjones/multi-git-status/master/multi-git-status' > /usr/local/bin/multi-git-status
+    chmod +x /usr/local/bin/multi-git-status
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/multi-git-status
