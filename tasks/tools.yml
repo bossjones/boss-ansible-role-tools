@@ -1039,3 +1039,15 @@
   args:
     executable: /bin/bash
     creates: /usr/local/bin/multi-git-status
+
+# SOURCE: https://github.com/bossjones/git-summary
+- name: install git-summary - Show uncommitted, untracked and unpushed changes for multiple Git repos
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/bossjones/git-summary/master/git-summary' > /usr/local/bin/git-summary
+    chmod +x /usr/local/bin/git-summary
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/git-summary
+
