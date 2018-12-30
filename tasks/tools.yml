@@ -61,6 +61,20 @@
     executable: /bin/bash
     creates: /usr/bin/hyperfine
 
+# https://github.com/sharkdp/vivid
+- name: install vivid -A generator for LS_COLORS with support for multiple color themes
+  shell: |
+    curl -L 'https://github.com/sharkdp/vivid/releases/download/v0.4.0/vivid_0.4.0_amd64.deb' > /usr/local/src/vivid_0.4.0_amd64.deb
+    apt install -y /usr/local/src/vivid_0.4.0_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/bin/vivid
+
+# wget "https://github.com/sharkdp/vivid/releases/download/v0.4.0/vivid_0.4.0_amd64.deb"
+# sudo dpkg -i vivid_0.4.0_amd64.deb
+
 # wget https://github.com/sharkdp/hyperfine/releases/download/v1.5.0/hyperfine_1.5.0_amd64.deb
 # sudo dpkg -i hyperfine_1.5.0_amd64.deb
 
