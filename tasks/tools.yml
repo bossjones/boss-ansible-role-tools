@@ -1051,3 +1051,13 @@
     executable: /bin/bash
     creates: /usr/local/bin/git-summary
 
+- name: install facebook/fbkutils - A variety of utilities built and maintained by Facebook's Linux Kernel Team that we wish to share with the community.
+  shell: |
+    git clone https://github.com/facebook/fbkutils.git ~/fbkutils
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/fbkutils'
+  with_items:
+    - true  # Run as root
+    - false
