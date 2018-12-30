@@ -1,0 +1,151 @@
+---
+# NOTE: Multi pod and container log tailing for Kubernetes
+- name: install stern
+  shell: |
+    curl -L 'https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64' > /usr/local/bin/stern
+    chmod +x /usr/local/bin/stern
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/stern
+
+- name: Add source <(stern --completion=bash) to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'source <(stern --completion=bash)'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+# An interactive kubernetes client featuring auto-complete using go-prompt.
+- name: install kube-prompt
+  shell: |
+    wget https://github.com/c-bata/kube-prompt/releases/download/v1.0.5/kube-prompt_v1.0.5_linux_amd64.zip
+    unzip kube-prompt_v1.0.5_linux_amd64.zip
+    chmod +x kube-prompt
+    sudo mv ./kube-prompt /usr/local/bin/kube-prompt
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kube-prompt
+
+# An interactive kubernetes client featuring auto-complete using go-prompt.
+# https://github.com/boz/kail/releases/download/v0.7.0/kail_0.7.0_linux_amd64.tar.gz
+- name: install kail
+  shell: |
+    wget https://github.com/boz/kail/releases/download/v0.7.0/kail_0.7.0_linux_amd64.tar.gz
+    tar xvf kail_0.7.0_linux_amd64.tar.gz
+    chmod +x kail
+    mv ./kail /usr/local/bin/kail
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kail
+
+# https://github.com/pulumi/kubespy/releases/download/v0.4.0/kubespy-linux-amd64.tar.gz
+
+# kubespy - Tools for observing Kubernetes resources in real time, powered by Pulumi
+- name: install kubespy - Tools for observing Kubernetes resources in real time, powered by Pulumi
+  shell: |
+    wget https://github.com/pulumi/kubespy/releases/download/v0.4.0/kubespy-linux-amd64.tar.gz ;
+    tar xvf kubespy-linux-amd64.tar.gz ;
+    mv releases/kubespy-linux-amd64/kubespy /usr/local/bin/kubespy ;
+    chmod +x /usr/local/bin/kubespy ;
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kubespy
+
+# kubetail
+- name: install kubetail
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail' > /usr/local/bin/kubetail ;
+    chmod +x /usr/local/bin/kubetail ;
+    curl -L 'https://raw.githubusercontent.com/johanhaleby/kubetail/master/completion/kubetail.bash' > /etc/bash_completion.d/kubetail ;
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kubetail
+
+# https://raw.githubusercontent.com/johanhaleby/kubetail/master/kubetail
+
+# https://github.com/peco/peco/releases/download/v0.5.3/peco_linux_amd64.tar.gz
+
+- name: Install kube-shell
+  pip:
+    name: "kube-shell"
+
+# NOTE: fast way to switch between clusters and namespaces in kubectl
+- name: install kubectx - fast way to switch between clusters and namespaces in kubectl
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx' > /usr/local/bin/kubectx
+    chmod +x /usr/local/bin/kubectx
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kubectx
+
+- name: install kubebox - Terminal and Web console for Kubernetes
+  shell: |
+    curl -L 'https://github.com/astefanutti/kubebox/releases/download/v0.3.2/kubebox-linux' > /usr/local/bin/kubebox
+    chmod +x /usr/local/bin/kubebox
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kubebox
+
+# kubectl create clusterrolebinding default-cluster-admin --clusterrole=cluster-admin --serviceaccount=default:default
+
+
+# curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.3.2/kubebox-linux && chmod +x kubebox
+
+# NOTE: fast way to switch between clusters and namespaces in kubectl
+- name: install kubens - fast way to switch between clusters and namespaces in kubectl
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens' > /usr/local/bin/kubens
+    chmod +x /usr/local/bin/kubens
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/kubens
+
+# MORE TOOLS FROM: https://medium.com/@jonyeezs/my-minimal-over-powered-linux-setup-guide-710931efb75b
+
+- name: install tmux bash completion
+  shell: |
+    curl -L 'https://raw.githubusercontent.com/Bash-it/bash-it/master/completion/available/tmux.completion.bash' > /etc/bash_completion.d/tmux ;
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /etc/bash_completion.d/tmux
+
+# https://github.com/nodesource/distributions/blob/master/README.md
+- name: install node version v11.4.0
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+    apt-get install -y nodejs
+    apt-get install -y gcc g++ make
+    npm install -g docker-loghose
+    npm install -g docker-enter
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/usr/bin/npm'
+  with_items:
+    - true  # Run as root
+  tags:
+  - node
+  - npm
+
+# TODO: Install

@@ -1,0 +1,13 @@
+---
+# https://github.com/nodesource/distributions/blob/master/README.md
+- name: install docker-loghose and docker-enter
+  shell: |
+    npm install -g docker-loghose
+    npm install -g docker-enter
+    touch /tmp/docker-loghose
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/tmp/docker-loghose'
+  with_items:
+    - true  # Run as root

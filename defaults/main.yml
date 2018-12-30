@@ -2,6 +2,8 @@
 
 go_version: "1.10"
 
-boss__ntp__timezone: 'America/New_York'
-
 boss__tools__ruby_version: 2.4.2
+
+boss__tools__install_docker_tools: False
+boss__tools__install_kube_tools: False
+boss__tools__install_rust_tools: False

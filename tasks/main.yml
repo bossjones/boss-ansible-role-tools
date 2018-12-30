@@ -1,3 +1,12 @@
 - include_tasks: facts.yml
 
 - include: "{{task| default('tools')}}.yml"
+
+- include: "kube.yml"
+  when: boss__tools__install_kube_tools is defined and boss__tools__install_kube_tools
+
+- include: "docker.yml"
+  when: boss__tools__install_docker_tools is defined and boss__tools__install_docker_tools
+
+- include: "rust.yml"
+  when: boss__tools__install_rust_tools is defined and boss__tools__install_rust_tools
