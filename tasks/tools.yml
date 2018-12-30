@@ -1061,3 +1061,68 @@
   with_items:
     - true  # Run as root
     - false
+
+
+
+- name: "create /usr/local/bin/whatschanged.sh"
+  copy:
+    content: |
+      #!/bin/bash
+      # SOURCE: https://medium.com/@moomzni/using-tags-to-speed-up-ansible-b17b6f462c22
+      # Purpose:    Wouldn't it be great if you could run ansible only for those roles that have changed since the last execution?
+      #             Ansible runs are typically long-running (>5min) processes and a practical way of reasonably minimising this time
+      #             is to only execute the roles that have changed since the last execution.  This script looks at the git diff
+      #             between the last successful build and current head and seeks to determine which roles have changed.  We then
+      #             use tags in ansible to determine which bits of the playbook to trigger.  The default behaviour if unable
+      #             to complete a diff (or if its empty) is to execute all tags.
+      #
+      # Parameters: This script takes no explicit parameters so you can run it verbatim and the default behaviour will be to invoke
+      #             all tags.  You can however supply the following environment variables:
+      #              - GIT_PREVIOUS_SUCCESSFUL_COMMIT - This is git SHA of the last successful commit; this is typically provided by
+      #                                                 implicitly by the jenkins git plugin.
+      #              - ANSIBLE_DEPLOY_TAGS - If this tag is present this script basically does nothing; the presence of this variable
+      #                                      overrides the function of this script e.g. a user requests to run specific tags
+      #
+      # Output: This script produces a jenkins.properties file which contains the ANSIBLE_DEPLOY_TAGS environment variable with the tags
+      #         to be executed by ansible.  This is then injected into Jenkins so it is available to the build executor.
+      #
+      # This file always needs to exist otherwise jenkins jobs fail; remove any previously generated files and initialise a new blank one
+      rm -f jenkins.properties && touch jenkins.properties
+      # If the ANSIBLE_DEPLOY_TAGS environment variable has been set outside of this script then we assume the user has done this and it overrides
+      # any function of this script; basically do nothing because user knows best.
+      if [ ! -z "${ANSIBLE_DEPLOY_TAGS}" ]; then
+        echo "Whats Changed: Tags already passed as parameters, skipping script" && exit 0
+      else
+        # If the variable hasn't already been set, initialise it with the default action of running all tags
+        ANSIBLE_DEPLOY_TAGS="all"
+      fi
+      # If GIT_PREVIOUS_SUCCESSFUL_COMMIT does not exist then then perform the default action (run all tags)
+      if [ -z "${GIT_PREVIOUS_SUCCESSFUL_COMMIT}" ]; then
+        echo "Whats Changed: No previous successful commit detected, executing all tags"
+      else
+        echo "Whats Changed: Setting commit ${GIT_PREVIOUS_SUCCESSFUL_COMMIT} as the anchor point"
+        # Look to see if any ./vars or ./vault_vars files are in in the git diff; VARS_CHANGED will be set to 'true' if files are found and 'false' otherwise
+        VARS_CHANGED=`git diff --name-only "${GIT_PREVIOUS_SUCCESSFUL_COMMIT}" | grep -qe '^vars\/'; if [ $? -eq 0 ]; then echo true; else echo false; fi`
+      # If variables have changed then the only safe assumption to make is that all tags need to be excecuted
+        if [[ "${VARS_CHANGED}" == "true" ]]; then
+          echo "Whats Changed: Detected global variables have changed since last successful commit, executing all tags"
+        else
+          # If no variables have changed then figure out specifically what roles have changed
+          WHATS_CHANGED=`git diff --name-only "${GIT_PREVIOUS_SUCCESSFUL_COMMIT}" | grep -e '^roles\/' | cut -d '/' -f2 | sort | uniq | paste -sd , -`
+          if [ -z "${WHATS_CHANGED}" ]; then
+            echo "Whats Changed: Detected that no roles have changed, failback to executing all tags"
+          else
+            echo "Whats Changed: Detected roles have changed since last successful commit, selectively executing only those roles"
+            ANSIBLE_DEPLOY_TAGS=$WHATS_CHANGED
+          fi
+        fi
+      fi
+      # Saving to properties file as this is what the jenkins jobs will be looking for
+      echo "Whats Changed: Saving tags ${ANSIBLE_DEPLOY_TAGS} to jenkins.properties"
+      echo "ANSIBLE_DEPLOY_TAGS=$ANSIBLE_DEPLOY_TAGS" > jenkins.properties
+
+
+    dest: "/usr/local/bin/whatschanged.sh"
+    owner: "root"
+    group: "root"
+    mode: 0755
