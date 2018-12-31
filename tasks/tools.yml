@@ -722,6 +722,21 @@
   - tmux
   - tmuxinator
 
+
+- name: Generate /home/vagrant/.tmuxinator/debug.yaml file
+  template:
+    src: "home/vagrant/.tmuxinator/debug.yml.j2"
+    dest: "/home/vagrant/.tmuxinator/debug.yml"
+    mode: "0644"
+  become: '{{ item }}'
+  become_user: "{{bossjones__user}}"
+  ignore_errors: yes
+  with_items:
+    - false  # Run as vagrant
+  tags:
+  - tmux
+  - tmuxinator
+
 # # SOURCE: https://github.com/rvm/rvm1-ansible/issues/46#issuecomment-278792283
 # - name: Install gems
 #   gem:

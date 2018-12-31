@@ -1,0 +1,16 @@
+# ~/.tmuxinator/debug.yml
+
+# source: https://github.com/tmuxinator/tmuxinator/blob/master/spec/fixtures/sample.yml
+
+name: debug
+root: ~/
+
+# # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: eval "$(rbenv init -)"; rbenv shell 2.4.3 && nvm use stable
+
+windows:
+  - neofetch:
+      layout: 9fa4,223x75,0,0{118x75,0,0[118x52,0,0{59x52,0,0,8,58x52,60,0,13},118x22,0,53,12],104x75,119,0[104x16,119,0,1,104x15,119,17,9,104x22,119,33,2,104x19,119,56,3]}
+      panes:
+        - neofetch:
+          - neofetch
