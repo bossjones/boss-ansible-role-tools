@@ -1087,21 +1087,23 @@
     regexp: source.*bashrc
     create: yes
     state: present
-  retries: 10
-  delay: 10
-  register: result
-  until: result.rc == 0
+  # retries: 10
+  # delay: 10
+  # register: result
+  # until: result.rc == 0
+  ignore_errors: yes
+  failed_when: false
   become: '{{ item }}'
   with_items:
     - true  # Run as root
     - false # Run as SSH user
 
 
-- name: make sure ~/.bashrc is sourced in ~/.bash_profile
-  lineinfile:
-    dest: ~/.bash_profile
-    regexp: source.*bashrc
-    line: if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
+# - name: make sure ~/.bashrc is sourced in ~/.bash_profile
+#   lineinfile:
+#     dest: ~/.bash_profile
+#     regexp: source.*bashrc
+#     line: if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 
 # export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
 - name: set go env. vars. and add go to path
