@@ -1085,7 +1085,7 @@
     path: '{{ ansible_user_dir }}/.bash_profile'
     line: 'source {{ ansible_user_dir }}/.bashrc'
     regexp: '^source {{ ansible_user_dir }}/.bashrc'
-    # create: yes
+    create: yes
     state: present
   become: '{{ item }}'
   with_items:
