@@ -1067,9 +1067,9 @@
 
 - name: source $HOME/.bashrc to root/ssh user bash_profile
   lineinfile:
-    path: '$HOME/.bash_profile'
-    line: 'source $HOME/.bashrc'
-    regexp: '^source $HOME/.bashrc'
+    path: '{{ ansible_user_dir }}/.bash_profile'
+    line: 'source {{ ansible_user_dir }}/.bashrc'
+    regexp: '^source {{ ansible_user_dir }}/.bashrc'
     # create: yes
     state: present
   become: '{{ item }}'
@@ -1081,7 +1081,7 @@
 # export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
 - name: set go env. vars. and add go to path
   blockinfile:
-    dest: '$HOME/.bashrc'
+    dest: '{{ ansible_user_dir }}/.bashrc'
     block: |
 
       docker-clean () {
