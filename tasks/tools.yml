@@ -1087,6 +1087,8 @@
     regexp: source.*bashrc
     create: yes
     state: present
+    group: '{{ ansible_user_id }}'
+    owner: '{{ ansible_user_id }}'
   # retries: 10
   # delay: 10
   # register: result
