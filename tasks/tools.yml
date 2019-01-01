@@ -1099,8 +1099,8 @@
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
   with_items:
-    # - true  # Run as root
-    - false # Run as SSH user
+    - true  # Run as root
+    # - false # Run as SSH user
 
 
 # - name: make sure ~/.bashrc is sourced in ~/.bash_profile
@@ -1128,5 +1128,5 @@
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
   with_items:
-    # - true  # Run as root
-    - false # Run as SSH user
+    - true  # Run as root
+    # - false # Run as SSH user
