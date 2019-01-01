@@ -7,6 +7,18 @@ root: ~/
 
 # # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
 # pre_window: eval "$(rbenv init -)"; rbenv shell 2.4.3 && nvm use stable
+pre_window: [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion; [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"; if [ -f ~/.bashrc ]; then source ~/.bashrc; fi;
+
+# [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# [[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion
+
+# [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+# if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
+
+# export PATH="$PATH:$HOME/.rvm/bin"
+
 
 windows:
   - neofetch:
