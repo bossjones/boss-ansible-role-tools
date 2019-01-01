@@ -1080,7 +1080,7 @@
     - true  # Run as root
 
 
-- name: "source $HOME/.bashrc to root/ssh user bash_profile ansible_user_id - {{ansible_user_id}}"
+- name: "source $HOME/.bashrc to root/ssh user bash_profile ansible_user_id - {{ansible_user_id}} bossjones__user - {{bossjones__user}}"
   lineinfile:
     # path: '{{ ansible_user_dir }}/.bash_profile'
     path: '~/.bash_profile'
@@ -1088,8 +1088,8 @@
     regexp: source.*bashrc
     create: yes
     state: present
-    group: '{{ ansible_user_id }}'
-    owner: '{{ ansible_user_id }}'
+    group: '{{ bossjones__user }}'
+    owner: '{{ bossjones__user }}'
   # retries: 10
   # delay: 10
   # register: result
@@ -1099,8 +1099,8 @@
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
   with_items:
-    - true  # Run as root
-    # - false # Run as SSH user
+    # - true  # Run as root
+    - false # Run as SSH user
 
 
 # - name: make sure ~/.bashrc is sourced in ~/.bash_profile
@@ -1110,7 +1110,7 @@
 #     line: if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 
 # export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
-- name: "docker-clean - {{ ansible_user_id }}"
+- name: "docker-clean - {{ ansible_user_id }} bossjones__user - {{bossjones__user}}"
   blockinfile:
     dest: '~/.bashrc'
     block: |
@@ -1123,10 +1123,10 @@
     state: present
     create: yes
     mode: 0644
-    group: '{{ ansible_user_id }}'
-    owner: '{{ ansible_user_id }}'
+    group: '{{ bossjones__user }}'
+    owner: '{{ bossjones__user }}'
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
   with_items:
-    - true  # Run as root
-    # - false # Run as SSH user
+    # - true  # Run as root
+    - false # Run as SSH user
