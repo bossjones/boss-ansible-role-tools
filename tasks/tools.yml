@@ -1080,9 +1080,10 @@
     - true  # Run as root
 
 
-- name: source $HOME/.bashrc to root/ssh user bash_profile
+- name: "source $HOME/.bashrc to root/ssh user bash_profile ansible_user_id - {{ansible_user_id}}"
   lineinfile:
-    path: '{{ ansible_user_dir }}/.bash_profile'
+    # path: '{{ ansible_user_dir }}/.bash_profile'
+    path: '~/.bash_profile'
     line: if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
     regexp: source.*bashrc
     create: yes
@@ -1096,8 +1097,9 @@
   ignore_errors: yes
   failed_when: false
   become: '{{ item }}'
+  become_user: "{{bossjones__user}}"
   with_items:
-    - true  # Run as root
+    # - true  # Run as root
     - false # Run as SSH user
 
 
@@ -1108,9 +1110,9 @@
 #     line: if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 
 # export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
-- name: set go env. vars. and add go to path
+- name: "docker-clean - {{ ansible_user_id }}"
   blockinfile:
-    dest: '{{ ansible_user_dir }}/.bashrc'
+    dest: '~/.bashrc'
     block: |
 
       docker-clean () {
@@ -1121,7 +1123,10 @@
     state: present
     create: yes
     mode: 0644
+    group: '{{ ansible_user_id }}'
+    owner: '{{ ansible_user_id }}'
   become: '{{ item }}'
+  become_user: "{{bossjones__user}}"
   with_items:
-    - true  # Run as root
+    # - true  # Run as root
     - false # Run as SSH user
