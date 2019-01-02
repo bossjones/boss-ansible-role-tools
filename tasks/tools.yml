@@ -391,9 +391,9 @@
   pip:
     name: "mitogen"
 
-- name: Install tmuxp
-  pip:
-    name: "tmuxp"
+# - name: Install tmuxp
+#   pip:
+#     name: "tmuxp"
 
 - name: install ~/.cheat for root and default user
   shell: |
