@@ -386,6 +386,11 @@
   pip:
     name: "cheat"
 
+# https://mitogen.readthedocs.io/en/stable/ansible.html
+- name: Install mitogen - Distributed self-replicating programs in Python increase speeds to 7x faster on CPU
+  pip:
+    name: "mitogen"
+
 - name: Install tmuxp
   pip:
     name: "tmuxp"
