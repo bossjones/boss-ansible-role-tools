@@ -1135,3 +1135,13 @@
   with_items:
     # - true  # Run as root
     - false # Run as SSH user
+
+- name: install ctop
+  shell: |
+    curl -L 'https://github.com/bcicen/ctop/releases/download/v0.7.1/ctop-0.7.1-linux-amd64' > /usr/local/bin/ctop
+    chmod +x /usr/local/bin/ctop
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/ctop
