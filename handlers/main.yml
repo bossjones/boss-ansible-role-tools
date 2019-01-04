@@ -11,3 +11,18 @@
   service:
     name: nfs-kernel-server
     state: restarted
+
+- name: kubectl completion bash > /etc/bash_completion.d/kubectl
+  shell: kubectl completion bash > /etc/bash_completion.d/kubectl
+
+- name: helm completion bash > /etc/bash_completion.d/helm
+  shell: helm completion bash > /etc/bash_completion.d/helm
+
+- name: kubeadm completion bash > /etc/bash_completion.d/kubeadm
+  shell: kubeadm completion bash > /etc/bash_completion.d/kubeadm
+
+- name: "curl -L 'https://raw.githubusercontent.com/johanhaleby/kubetail/master/completion/kubetail.bash' > /etc/bash_completion.d/kubetail"
+  shell: curl -L 'https://raw.githubusercontent.com/johanhaleby/kubetail/master/completion/kubetail.bash' > /etc/bash_completion.d/kubetail
+
+- name: stern --completion=bash > /etc/bash_completion.d/stern
+  shell: stern --completion=bash > /etc/bash_completion.d/stern

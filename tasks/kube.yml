@@ -149,3 +149,45 @@
   - npm
 
 # TODO: Install
+
+
+
+- name: Install optional packages like bash-completion
+  package: name={{ item }} state={{ package_state | default ('latest') }}
+  with_items:
+  - bash-completion
+  ignore_errors: yes
+
+# - name: add kubectl/kubeadm/helm shell competions to ~/.{{ shell | default ('bash') }}rc
+#   lineinfile:
+#     dest: ~/.{{ shell | default ('bash') }}rc
+#     line: "{{ item }}"
+#     state: present
+#     create: yes
+#   with_items:
+#   - "# k8s shell completion; for zsh min vers is 5.2+"
+#   - "source <(kubectl completion {{ shell | default ('bash') }} 2>/dev/null || true)"
+#   - "source <(kubeadm completion {{ shell | default ('bash') }} 2>/dev/null || true)"
+#   - "source <(helm    completion {{ shell | default ('bash') }} 2>/dev/null || true)"
+
+
+- name: Add source <(kubectl completion bash) to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'source <(kubectl completion bash)'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
+
+
+- name: Add source <(kubeadm completion bash) to root/ssh user bashrc
+  lineinfile:
+    path: '$HOME/.bashrc'
+    line: 'source <(kubeadm completion bash)'
+    create: yes
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root
+    - false # Run as SSH user
