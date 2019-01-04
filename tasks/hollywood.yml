@@ -79,3 +79,20 @@
     creates: /usr/bin/bat
 
 # https://github.com/sharkdp/bat/releases/download/v0.9.0/bat_0.9.0_amd64.deb
+
+
+
+# https://github.com/sharkdp/fd
+- name: 'install fd - A simple, fast and user-friendly alternative to find'
+  shell: |
+    curl -L 'https://github.com/sharkdp/fd/releases/download/v7.2.0/fd_7.2.0_amd64.deb' > /usr/local/src/fd_7.2.0_amd64.deb
+    apt install -y /usr/local/src/fd_7.2.0_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/bin/fd
+
+# NOTE: we need to add this to profile
+# export FZF_DEFAULT_COMMAND='fd --type file'
+# export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
