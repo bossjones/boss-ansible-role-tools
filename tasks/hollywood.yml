@@ -1,0 +1,50 @@
+---
+# SIYRCEL https://github.com/bossjones/hollywood-vagrant/blob/master/Vagrantfile
+
+- name: "Install hollywood tools"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - apg.3-dev
+      - atop
+      - bmon
+      - ccze
+      - cmatrix
+      - dnstop
+      - errno
+      - ethstatus
+      - glances
+      - htop
+      - ifstat
+      - iotop
+      - iptotal
+      - iptraf-ng
+      - itop
+      - jnettop
+      - jp2a
+      - kerneltop
+      - latencytop
+      - logtop
+      - netmrg
+      - nload
+      - nmon
+      - ntop
+      - powertop
+      - sagan
+      - slurm
+      - snetz
+      - speedometer
+      - tiptop
+      - top
+      - tree
+      - vnstat
+      - smem
+      - bzip2
+      - unzip
+      - xz-utils
+      - wget bzip2
+      - libglib2.0-0
+      - libxext6
+      - libsm6
+      - libxrender1
