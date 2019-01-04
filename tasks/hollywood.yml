@@ -66,3 +66,16 @@
 # $ sudo add-apt-repository ppa:amanusk/python-s-tui
 # $ sudo apt-get update
 # $ sudo apt-get install python-s-tui
+
+# https://github.com/sharkdp/bat
+- name: 'install bat - A cat(1) clone with wings.'
+  shell: |
+    curl -L 'https://github.com/sharkdp/bat/releases/download/v0.9.0/bat_0.9.0_amd64.deb' > /usr/local/src/bat_0.9.0_amd64.deb
+    apt install -y /usr/local/src/bat_0.9.0_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/bin/bat
+
+# https://github.com/sharkdp/bat/releases/download/v0.9.0/bat_0.9.0_amd64.deb
