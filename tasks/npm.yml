@@ -6,8 +6,8 @@
     npm install -g fkill-cli
     npm install -g vtop
     npm install -g spoof
-    touch /tmp/fkill-cli
     npm install -g snyk
+    touch /tmp/fkill-cli
   become: '{{ item }}'
   args:
     executable: /bin/bash
