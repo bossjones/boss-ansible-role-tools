@@ -1,0 +1,16 @@
+---
+
+# https://hackernoon.com/the-best-of-npm-install-g-9ab9d749eeb1
+- name: install node utilities
+  shell: |
+    npm install -g fkill-cli
+    npm install -g vtop
+    npm install -g spoof
+    touch /tmp/fkill-cli
+    npm install -g snyk
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/tmp/fkill-cli'
+  with_items:
+    - true  # Run as root
