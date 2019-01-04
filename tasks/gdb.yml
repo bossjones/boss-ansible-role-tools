@@ -1,0 +1,14 @@
+---
+# SOURCE: https://github.com/cyrus-and/gdb-dashboard
+- name: 'install ~/.gdbinit for root and default user - gdb-dashboard LOOK AT THIS FOR MORE INFO: https://github.com/cyrus-and/gdb-dashboard'
+  shell: |
+    wget -P ~ git.io/.gdbinit
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '$HOME/.gdbinit'
+  with_items:
+    - true  # Run as root
+    - false
+  tags:
+  - gdb-dashboard

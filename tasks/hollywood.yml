@@ -51,3 +51,18 @@
       - libxrender1
       - hollywood
       # - byobu
+      # https://www.cyberciti.biz/python-tutorials/monitor-linux-cpu-temperature-frequency-power-in-a-graphical-way/
+      - stress
+      # FIXME: FIND THIS!!!!!!!!!!!!!!!! - https://www.tecmint.com/colourised-disk-space-usage-in-linux/
+      # - discus
+
+
+# https://www.cyberciti.biz/python-tutorials/monitor-linux-cpu-temperature-frequency-power-in-a-graphical-way/
+- name: Install s-tui
+  pip:
+    name: "s-tui"
+
+
+# $ sudo add-apt-repository ppa:amanusk/python-s-tui
+# $ sudo apt-get update
+# $ sudo apt-get install python-s-tui
