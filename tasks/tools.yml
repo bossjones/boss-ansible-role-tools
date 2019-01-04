@@ -149,6 +149,7 @@
       - iozone3
       - tree
       - ruby2.3-dev
+      - smem
 
 # SOURCE: https://gist.github.com/kometchtech/c5681b2a70b30c99bf7e834ffb3abba5
 - name: "Install dnsperf prereqs"
