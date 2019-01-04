@@ -31,3 +31,23 @@
 # curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
 #   chmod 755 msfinstall && \
 #   ./msfinstall
+
+# mkdir /opt/merlin;cd /opt/merlin
+# wget https://github.com/Ne0nd0g/merlin/releases/download/v0.1.4/merlinServer-Linux-x64-v0.1.4.7z
+# 7z x merlinServer-Linux-x64-v0.1.4.7z
+# sudo ./merlinServer-Linux-x64
+
+# https://github.com/Ne0nd0g/merlin
+- name: install merlin - Merlin is a cross-platform post-exploitation HTTP/2 Command & Control server and agent written in golang
+  shell: |
+    mkdir /opt/merlin
+    cd /opt/merlin
+    wget https://github.com/Ne0nd0g/merlin/releases/download/v0.1.4/merlinServer-Linux-x64-v0.1.4.7z
+    7z x merlinServer-Linux-x64-v0.1.4.7z
+    mv merlinServer-Linux-x64 merlin-server
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    creates: '/opt/merlin/merlin-server'
+  with_items:
+    - true  # Run as root
