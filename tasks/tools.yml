@@ -1153,3 +1153,37 @@
 # For Windows 10: https://github.com/Microsoft/Ethr/files/2640289/ethr.zip
 # For Ubuntu: https://github.com/Microsoft/Ethr/files/2640288/ethr.gz
 # For ArchLinux: https://aur.archlinux.org/packages/ethr
+
+
+# sudo add-apt-repository ppa:twodopeshaggy/jarun
+# sudo apt-get update
+
+# # https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/
+# - name: 'This is for debug packages GPG Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 822B68845525C0F9BD1D6F826B880C4CE122E8FC'
+#   apt_key:
+#     keyserver: keyserver.ubuntu.com
+#     id: 822B68845525C0F9BD1D6F826B880C4CE122E8FC
+#     state: present
+
+# # https://github.com/jarun/nnn#quickstart
+# - name: add nnn packages repo on xenial
+#   apt_repository:
+#     repo: "{{item}}"
+#     state: present
+#     update_cache: yes
+#     filename: nnn.list
+#   when: ansible_os_family == "Debian"
+#   with_items:
+#   - "deb http://ppa.launchpad.net/twodopeshaggy/jarun/ubuntu {{ansible_distribution_release}} main"
+#   - "deb-src http://ppa.launchpad.net/twodopeshaggy/jarun/ubuntu {{ansible_distribution_release}} main"
+
+- name: Install nnn
+  apt:
+    name: "nnn"
+    state: latest
+    force_apt_get: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  become: '{{ item }}'
+  with_items:
+    - true  # Run as root

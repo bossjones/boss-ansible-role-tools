@@ -1,0 +1,15 @@
+---
+
+# https://github.com/Nyr/openvpn-install
+- name: 'install openvpn - OpenVPN road warrior installer for Debian, Ubuntu and CentOS'
+  shell: |
+    wget https://git.io/vpn -O openvpn-install.sh && bash openvpn-install.sh
+  become: '{{ item }}'
+  args:
+    executable: /bin/bash
+    # creates: '/tmp/fkill-cli'
+  with_items:
+    - true  # Run as root
+
+
+# SOURCE: https://github.com/k4m4/terminals-are-sexy
