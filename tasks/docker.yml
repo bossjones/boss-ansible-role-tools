@@ -11,3 +11,17 @@
     creates: '/tmp/docker-loghose'
   with_items:
     - true  # Run as root
+
+
+- name: install dive - A tool for exploring each layer in a docker image
+  shell: |
+    curl -L 'https://github.com/wagoodman/dive/releases/download/v0.6.0/dive_0.6.0_linux_amd64.deb' > /usr/local/src/dive_0.6.0_linux_amd64.deb
+    apt install -y /usr/local/src/dive_0.6.0_linux_amd64.deb
+  become: yes
+  become_method: sudo
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/dive
+
+# wget https://github.com/wagoodman/dive/releases/download/v0.6.0/dive_0.6.0_linux_amd64.deb
+# sudo apt install ./dive_0.6.0_linux_amd64.deb
