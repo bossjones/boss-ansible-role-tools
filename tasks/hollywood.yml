@@ -43,10 +43,11 @@
       - bzip2
       - unzip
       - xz-utils
-      - wget bzip2
+      - wget
+      - bzip2
       - libglib2.0-0
       - libxext6
       - libsm6
       - libxrender1
       - hollywood
-      - byobu
+      # - byobu
