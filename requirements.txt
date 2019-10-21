@@ -5,15 +5,13 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 ansible-lint==3.5.1
-ansible==2.5.11
+ansible==2.6.18
 asn1crypto==0.24.0        # via cryptography
 autopep8==1.4.2
 bcrypt==3.1.4             # via paramiko
 cffi==1.11.5              # via bcrypt, cryptography, pynacl
 cryptography==2.3.1       # via ansible, paramiko
-enum34==1.1.6             # via cryptography
 idna==2.7                 # via cryptography
-ipaddress==1.0.22         # via cryptography
 jinja2==2.10              # via ansible
 markupsafe==1.0           # via jinja2
 paramiko==2.4.2           # via ansible
