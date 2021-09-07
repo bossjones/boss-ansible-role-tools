@@ -513,7 +513,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-      - bcc-tools
+      # - bcc-tools
       # - libbcc-examples
       - "linux-headers-{{ uname_result.stdout }}"
       # NOTE: These are required for perf to work
