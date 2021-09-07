@@ -13,13 +13,13 @@
   with_items:
     - true  # Run as root
 
-- name: install go
-  unarchive:
-    src: 'https://storage.googleapis.com/golang/go{{ go_version }}.linux-{{ sys_arch }}.tar.gz'
-    remote_src: yes
-    dest: /usr/local
-    mode: 0777
-    creates: /usr/local/go/bin/go
+# - name: install go
+#   unarchive:
+#     src: 'https://storage.googleapis.com/golang/go{{ go_version }}.linux-{{ sys_arch }}.tar.gz'
+#     remote_src: yes
+#     dest: /usr/local
+#     mode: 0777
+#     creates: /usr/local/go/bin/go
 
 # export PATH=$PATH:/usr/local/go/bin:${HOME}/go/bin
 - name: set go env. vars. and add go to path
@@ -201,19 +201,19 @@
 
 # MORE TOOLS FROM: https://medium.com/@jonyeezs/my-minimal-over-powered-linux-setup-guide-710931efb75b
 
-- name: install fzf for root and default user
-  shell: |
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install --all
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-    creates: '$HOME/.fzf'
-  with_items:
-    - true  # Run as root
-    - false
-  tags:
-  - fzf
+# - name: install fzf for root and default user
+#   shell: |
+#     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+#     ~/.fzf/install --all
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#     creates: '$HOME/.fzf'
+#   with_items:
+#     - true  # Run as root
+#     - false
+#   tags:
+#   - fzf
 
 - name: install perf-tools for root and default user
   shell: |
@@ -351,7 +351,7 @@
 
 # https://github.com/heppu/gkill/releases/download/v1.0.2/gkill-linux-amd64
 
-- name: install grv - GRV — Git Repository Viewer
+- name: install grv - GRV -Git Repository Viewer
   shell: |
     curl -L 'https://github.com/rgburke/grv/releases/download/v0.1.2/grv_v0.1.2_linux64' > /usr/local/bin/grv
     chmod +x /usr/local/bin/grv
@@ -384,9 +384,9 @@
     executable: /bin/bash
     creates: /etc/bash_completion.d/tmux
 
-- name: Install cheat
-  pip:
-    name: "cheat"
+# - name: Install cheat
+#   pip:
+#     name: "cheat"
 
 # https://mitogen.readthedocs.io/en/stable/ansible.html
 - name: Install mitogen - Distributed self-replicating programs in Python increase speeds to 7x faster on CPU
@@ -397,71 +397,71 @@
 #   pip:
 #     name: "tmuxp"
 
-- name: install ~/.cheat for root and default user
-  shell: |
-    git clone https://github.com/bossjones/boss-cheatsheets ~/.cheat
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-    creates: '$HOME/.cheat'
-  with_items:
-    - true  # Run as root
-    - false
-  tags:
-  - cheat
+# - name: install ~/.cheat for root and default user
+#   shell: |
+#     git clone https://github.com/bossjones/boss-cheatsheets ~/.cheat
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#     creates: '$HOME/.cheat'
+#   with_items:
+#     - true  # Run as root
+#     - false
+#   tags:
+#   - cheat
 
-- name: autocomplete ~/.cheat for root and default user
-  shell: |
-    curl 'https://raw.githubusercontent.com/chrisallenlane/cheat/master/cheat/autocompletion/cheat.bash' > /etc/bash_completion.d/cheat ;
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-    creates: '/etc/bash_completion.d/cheat'
-  with_items:
-    - true  # Run as root
-  tags:
-  - cheat
+# - name: autocomplete ~/.cheat for root and default user
+#   shell: |
+#     curl 'https://raw.githubusercontent.com/chrisallenlane/cheat/master/cheat/autocompletion/cheat.bash' > /etc/bash_completion.d/cheat ;
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#     creates: '/etc/bash_completion.d/cheat'
+#   with_items:
+#     - true  # Run as root
+#   tags:
+#   - cheat
 
-- name: Install cheat
-  pip:
-    name: "cheat"
+# - name: Install cheat
+#   pip:
+#     name: "cheat"
 
-# https://github.com/nodesource/distributions/blob/master/README.md
-- name: install node version v11.4.0
-  shell: |
-    curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
-    apt-get install -y nodejs
-    apt-get install -y gcc g++ make
-    npm install gtop -g
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-    creates: '/usr/bin/npm'
-  with_items:
-    - true  # Run as root
-  tags:
-  - node
-  - npm
+# # https://github.com/nodesource/distributions/blob/master/README.md
+# - name: install node version v11.4.0
+#   shell: |
+#     curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+#     apt-get install -y nodejs
+#     apt-get install -y gcc g++ make
+#     npm install gtop -g
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#     creates: '/usr/bin/npm'
+#   with_items:
+#     - true  # Run as root
+#   tags:
+#   - node
+#   - npm
 
 # SOURCE: https://github.com/iovisor/bcc/blob/master/INSTALL.md
 # FIXME: https://github.com/pypa/pip/issues/5240
 # curl https://bootstrap.pypa.io/get-pip.py | python3
 # pip2 install --upgrade pip
 
-# https://github.com/nodesource/distributions/blob/master/README.md
-- name: Install latest python pip for python3 and python2
-  shell: |
-    curl https://bootstrap.pypa.io/get-pip.py | python3
-    pip2 install --upgrade pip
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-  with_items:
-    - true  # Run as root
-  ignore_errors: yes
-  tags:
-  - pip
-  - python-pip
+# # https://github.com/nodesource/distributions/blob/master/README.md
+# - name: Install latest python pip for python3 and python2
+#   shell: |
+#     curl https://bootstrap.pypa.io/get-pip.py | python3
+#     pip2 install --upgrade pip
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#   with_items:
+#     - true  # Run as root
+#   ignore_errors: yes
+#   tags:
+#   - pip
+#   - python-pip
 
 - name: 'Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4052245BD4284CDD'
   apt_key:
@@ -525,21 +525,21 @@
       - linux-tools-generic
       - linux-cloud-tools-generic
 
-- name: git clone https://github.com/bossjones/tmux-config.git
-  shell: |
-    git clone https://github.com/bossjones/tmux-config.git ~/tmux-config || (cd ~/tmux-config ; git pull)
-    ~/tmux-config/install.sh
-    chdir=$HOME
-  become: '{{ item }}'
-  args:
-    executable: /bin/bash
-    creates: '$HOME/tmux-config'
-  with_items:
-    - true  # Run as vagrant
-    - false  # Run as vagrant
-  tags:
-  - tmux
-  - tmux-config
+# - name: git clone https://github.com/bossjones/tmux-config.git
+#   shell: |
+#     git clone https://github.com/bossjones/tmux-config.git ~/tmux-config || (cd ~/tmux-config ; git pull)
+#     ~/tmux-config/install.sh
+#     chdir=$HOME
+#   become: '{{ item }}'
+#   args:
+#     executable: /bin/bash
+#     creates: '$HOME/tmux-config'
+#   with_items:
+#     - true  # Run as vagrant
+#     - false  # Run as vagrant
+#   tags:
+#   - tmux
+#   - tmux-config
 
 
 - name: Add bcc-tools to path
@@ -736,10 +736,10 @@
   - tmux
   - tmuxinator
 
-- name: Generate /home/vagrant/.tmuxinator/perf.yaml file
+- name: "Generate /home/{{bossjones__user}}/.tmuxinator/perf.yaml file"
   template:
-    src: "home/vagrant/.tmuxinator/perf.yml.j2"
-    dest: "/home/vagrant/.tmuxinator/perf.yml"
+    src: "home/{{bossjones__user}}/.tmuxinator/perf.yml.j2"
+    dest: "/home/{{bossjones__user}}/.tmuxinator/perf.yml"
     mode: "0644"
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
@@ -751,10 +751,10 @@
   - tmuxinator
 
 
-- name: Generate /home/vagrant/.tmuxinator/debug.yaml file
+- name: "Generate /home/{{bossjones__user}}/.tmuxinator/debug.yaml file"
   template:
-    src: "home/vagrant/.tmuxinator/debug.yml.j2"
-    dest: "/home/vagrant/.tmuxinator/debug.yml"
+    src: "home/{{bossjones__user}}/.tmuxinator/debug.yml.j2"
+    dest: "/home/{{bossjones__user}}/.tmuxinator/debug.yml"
     mode: "0644"
   become: '{{ item }}'
   become_user: "{{bossjones__user}}"
@@ -815,105 +815,105 @@
 # #   - tmuxinator
 
 
-- name: source $HOME/.rvm/scripts/rvm to root/ssh user bashrc
-  lineinfile:
-    path: '$HOME/.bashrc'
-    line: 'source $HOME/.rvm/scripts/rvm'
-    regexp: '^source $HOME/.rvm/scripts/rvm'
-    # create: yes
-    state: absent
-  become: '{{ item }}'
-  with_items:
-    # - true  # Run as root
-    - false # Run as SSH user
-
 # - name: source $HOME/.rvm/scripts/rvm to root/ssh user bashrc
+#   lineinfile:
+#     path: '$HOME/.bashrc'
+#     line: 'source $HOME/.rvm/scripts/rvm'
+#     regexp: '^source $HOME/.rvm/scripts/rvm'
+#     # create: yes
+#     state: absent
+#   become: '{{ item }}'
+#   with_items:
+#     # - true  # Run as root
+#     - false # Run as SSH user
+
+# # - name: source $HOME/.rvm/scripts/rvm to root/ssh user bashrc
+# #   lineinfile:
+# #     path: '$HOME/.bash_profile'
+# #     line: 'source $HOME/.rvm/scripts/rvm'
+# #     create: yes
+# #   become: '{{ item }}'
+# #   with_items:
+# #     - true  # Run as root
+# #     - false # Run as SSH user
+
+# - name: source $HOME/.rvm/scripts/rvm to root/ssh user bash_profile
 #   lineinfile:
 #     path: '$HOME/.bash_profile'
 #     line: 'source $HOME/.rvm/scripts/rvm'
+#     regexp: '^source $HOME/.rvm/scripts/rvm'
+#     # create: yes
+#     state: absent
+#   become: '{{ item }}'
+#   with_items:
+#     # - true  # Run as root
+#     - false # Run as SSH user
+
+# - name: autocomplete rvm
+#   lineinfile:
+#     path: '$HOME/.bash_profile'
+#     line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
 #     create: yes
 #   become: '{{ item }}'
 #   with_items:
 #     - true  # Run as root
 #     - false # Run as SSH user
 
-- name: source $HOME/.rvm/scripts/rvm to root/ssh user bash_profile
-  lineinfile:
-    path: '$HOME/.bash_profile'
-    line: 'source $HOME/.rvm/scripts/rvm'
-    regexp: '^source $HOME/.rvm/scripts/rvm'
-    # create: yes
-    state: absent
-  become: '{{ item }}'
-  with_items:
-    # - true  # Run as root
-    - false # Run as SSH user
+# - name: autocomplete rvm
+#   lineinfile:
+#     path: '$HOME/.bashrc'
+#     line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
+#     create: yes
+#   become: '{{ item }}'
+#   with_items:
+#     - true  # Run as root
+#     - false # Run as SSH user
 
-- name: autocomplete rvm
-  lineinfile:
-    path: '$HOME/.bash_profile'
-    line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
-    create: yes
-  become: '{{ item }}'
-  with_items:
-    - true  # Run as root
-    - false # Run as SSH user
+# # \curl -sSL https://get.rvm.io | bash -s stable --ruby=jruby --gems=rails,puma
+# # curl -sSL https://get.rvm.io | bash -s stable --ruby
+# # \curl -sSL https://get.rvm.io | bash -s stable --with-default-gems="tmuxinator bundler"
 
-- name: autocomplete rvm
-  lineinfile:
-    path: '$HOME/.bashrc'
-    line: '[[ -r $rvm_path/scripts/completion ]] && . $rvm_path/scripts/completion'
-    create: yes
-  become: '{{ item }}'
-  with_items:
-    - true  # Run as root
-    - false # Run as SSH user
+# - name: install rvm for base user
+#   shell: |
+#     gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB;
+#     \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.4.2 --gems=tmuxinator,bundler;
+#   args:
+#     executable: /bin/bash
+#     creates: '$HOME/.rvm'
+#   register: rvm_install_global
+#   changed_when: false
+#   ignore_errors: yes
+#   failed_when: false
+#   check_mode: no
+#   become: yes
+#   become_user: "{{bossjones__user}}"
 
-# \curl -sSL https://get.rvm.io | bash -s stable --ruby=jruby --gems=rails,puma
-# curl -sSL https://get.rvm.io | bash -s stable --ruby
-# \curl -sSL https://get.rvm.io | bash -s stable --with-default-gems="tmuxinator bundler"
+# # source $HOME/.rvm/scripts/rvm
 
-- name: install rvm for base user
-  shell: |
-    gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB;
-    \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.4.2 --gems=tmuxinator,bundler;
-  args:
-    executable: /bin/bash
-    creates: '$HOME/.rvm'
-  register: rvm_install_global
-  changed_when: false
-  ignore_errors: yes
-  failed_when: false
-  check_mode: no
-  become: yes
-  become_user: "{{bossjones__user}}"
+# # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+# # export PATH="$PATH:$HOME/.rvm/bin"
 
-# source $HOME/.rvm/scripts/rvm
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-# export PATH="$PATH:$HOME/.rvm/bin"
-
-- name: install gems for rvm version
-  shell: $SHELL -lc "rvm use {{boss__tools__ruby_version}} --default; gem install {{item}}"
-  args:
-    executable: /bin/bash
-    creates: '{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/bundler'
-  register: rvm_install_global
-  changed_when: false
-  ignore_errors: yes
-  environment:
-    PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin:\
-            {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global/bin:\
-            {{ ansible_user_dir }}/.rvm/rubies/ruby-{{ boss__tools__ruby_version }}/bin:\
-            {{ ansible_user_dir }}/.rvm/bin:\
-            {{ lookup('env', 'PATH') }}"
-  failed_when: false
-  check_mode: no
-  with_items:
-    - tmuxinator
-    - bundler
-  become: yes
-  become_user: "{{bossjones__user}}"
+# - name: install gems for rvm version
+#   shell: $SHELL -lc "rvm use {{boss__tools__ruby_version}} --default; gem install {{item}}"
+#   args:
+#     executable: /bin/bash
+#     creates: '{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin/bundler'
+#   register: rvm_install_global
+#   changed_when: false
+#   ignore_errors: yes
+#   environment:
+#     PATH: "{{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}/bin:\
+#             {{ ansible_user_dir }}/.rvm/gems/ruby-{{ boss__tools__ruby_version }}@global/bin:\
+#             {{ ansible_user_dir }}/.rvm/rubies/ruby-{{ boss__tools__ruby_version }}/bin:\
+#             {{ ansible_user_dir }}/.rvm/bin:\
+#             {{ lookup('env', 'PATH') }}"
+#   failed_when: false
+#   check_mode: no
+#   with_items:
+#     - tmuxinator
+#     - bundler
+#   become: yes
+#   become_user: "{{bossjones__user}}"
 
 
 - name: 'This is for debug packages GPG Add an apt key by id from a keyserver - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F2EDC64DC5AEE1F6B9C621F0C8CAB6595FDFF622'
@@ -1159,15 +1159,15 @@
     # - true  # Run as root
     - false # Run as SSH user
 
-- name: install ctop
-  shell: |
-    curl -L 'https://github.com/bcicen/ctop/releases/download/v0.7.1/ctop-0.7.1-linux-amd64' > /usr/local/bin/ctop
-    chmod +x /usr/local/bin/ctop
-  become: yes
-  become_method: sudo
-  args:
-    executable: /bin/bash
-    creates: /usr/local/bin/ctop
+# - name: install ctop
+#   shell: |
+#     curl -L 'https://github.com/bcicen/ctop/releases/download/v0.7.1/ctop-0.7.1-linux-amd64' > /usr/local/bin/ctop
+#     chmod +x /usr/local/bin/ctop
+#   become: yes
+#   become_method: sudo
+#   args:
+#     executable: /bin/bash
+#     creates: /usr/local/bin/ctop
 
 
 
