@@ -473,7 +473,7 @@
 - name: add bcc repo on xenial
   apt_repository:
     repo: deb https://repo.iovisor.org/apt/{{ansible_distribution_release}} {{ansible_distribution_release}} main
-    state: present
+    state: absent
     update_cache: yes
     filename: iovisor.list
   when: ansible_os_family == "Debian"
@@ -486,6 +486,27 @@
   register: uname_result
 
 - debug: msg="{{ uname_result.stdout }}"
+
+- name: "Install bcc build deps"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+      - bison
+      - build-essential
+      - cmake
+      - flex
+      - git
+      - libedit-dev
+      - libllvm7
+      - llvm-7-dev
+      - libclang-7-dev
+      - zlib1g-dev
+      - libelf-dev
+      - libfl-dev
+      - python3-distutils
+      - luajit
+      - luajit-5.1-dev
 
 - name: "Install bcc"
   package:
