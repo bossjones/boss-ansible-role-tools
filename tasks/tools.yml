@@ -514,7 +514,7 @@
     state: present
   with_items:
       - bcc-tools
-      - libbcc-examples
+      # - libbcc-examples
       - "linux-headers-{{ uname_result.stdout }}"
       # NOTE: These are required for perf to work
       # SOURCE: http://www.brendangregg.com/perf.html#Prerequisites
