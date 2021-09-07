@@ -506,7 +506,7 @@
       - libfl-dev
       - python3-distutils
       - luajit
-      - luajit-5.1-dev
+      # - luajit-5.1-dev
 
 - name: "Install bcc"
   package:
