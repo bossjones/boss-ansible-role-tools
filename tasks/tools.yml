@@ -148,7 +148,7 @@
       - gnuplot
       - iozone3
       - tree
-      - ruby2.3-dev
+      - ruby2.7-dev
       # SOURCE: https://linoxide.com/tools/memory-usage-reporting-smem/
       - smem
 
